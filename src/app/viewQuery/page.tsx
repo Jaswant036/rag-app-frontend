@@ -25,23 +25,33 @@ export default function ViewQueryPage() {
 
   // Create a hook to call the API.
   useEffect(() => {
-    const fetchData = async () => {
-      try {
-        const request = {
-          queryId: queryId!,
-        };
-        const response = api.getQueryEndpointGetQueryGet(request);
-        response.then((data) => {
-          console.log(data);
-          setQueryItem(data);
-        });
-        console.log(`Got data: ${response}`);
-      } catch (error) {
-        console.error("Error fetching data:", error);
+  if (!queryId) return;
+
+  let interval: NodeJS.Timeout;
+
+  const fetchData = async () => {
+    try {
+      const response = await api.getQueryEndpointGetQueryGet({ queryId });
+      setQueryItem(response);
+
+      // Stop polling when the query is complete
+      if (response.isComplete) {
+        clearInterval(interval);
       }
-    };
-    fetchData();
-  }, []); 
+    } catch (error) {
+      console.error("Error fetching data:", error);
+    }
+  };
+
+  // 1️⃣ fetch immediately
+  fetchData();
+
+  // 2️⃣ start polling every 3 seconds
+  interval = setInterval(fetchData, 3000);
+
+  // 3️⃣ cleanup when component unmounts
+  return () => clearInterval(interval);
+}, [queryId]);
 
   let viewQueryElement;
 
@@ -77,9 +87,9 @@ export default function ViewQueryPage() {
         <div className="mt-4">{sourcesElement}</div>
       </>
     ) : (
-      <div className="text-slate-500 flex">
-        <Loader className="h-4 w-4 mr-2 my-auto" />
-        Still loading. Please try again later.
+      <div className="flex flex-col items-center justify-center py-6 text-slate-500">
+          <Loader className="h-10 w-10 animate-spin mb-2" />
+          <span>Fetching your answer...</span>
       </div>
     );
 
