@@ -82,7 +82,7 @@ export default function ViewQueryPage() {
     <div className="flex flex-col gap-2 mt-2">
       {[
         "Suggest me some youtube channels for Aptitude preperation",
-        "How many projects should we do minimum for interview preperation?",
+        "How many projects should we do for interview preperation?",
       ].map((faq, index) => (
         <button
           key={index}
