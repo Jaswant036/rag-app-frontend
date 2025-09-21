@@ -68,23 +68,12 @@ export default function ViewQueryPage() {
     if (!queryItem.sources) {
       queryItem.sources = [];
     }
-    const sourcesElement = queryItem.sources!.map((source) => {
-      return (
-        <Link key={source} href={`/source/${source}`}>
-          <div className="text-xs flex text-slate-500 hover:underline">
-            <Link2 className="mr-2 h-4 w-4" />
-            {source}
-          </div>
-        </Link>
-      );
-    });
 
     const isComplete = queryItem.isComplete;
     const answerElement = isComplete ? (
       <>
         <div className="font-bold">Response</div>
         {queryItem?.answerText}
-        <div className="mt-4">{sourcesElement}</div>
       </>
     ) : (
       <div className="flex flex-col items-center justify-center py-6 text-slate-500">
