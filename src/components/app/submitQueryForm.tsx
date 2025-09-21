@@ -19,7 +19,7 @@ import {
 export default function SubmitQueryForm() {
   const api = createApiClient();
   const userId = getSessionId();
-  const originalPlaceHolder: string ="What are the Topics in Dsa";
+  const originalPlaceHolder: string ="What program language should i learn?";
 
   const [query, setQuery] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
