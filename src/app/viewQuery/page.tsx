@@ -16,6 +16,8 @@ import { ArrowLeft, Link2, Loader } from "lucide-react";
 import Link from "next/link";
 import { useSearchParams } from "next/navigation";
 import { useEffect, useState } from "react";
+import { getSessionId } from "@/lib/getUserId";
+
 
 export default function ViewQueryPage() {
   const searchParams = useSearchParams();
@@ -71,16 +73,34 @@ export default function ViewQueryPage() {
 
     const isComplete = queryItem.isComplete;
     const answerElement = isComplete ? (
-      <>
-        <div className="font-bold">Response</div>
-        {queryItem?.answerText}
-      </>
-    ) : (
-      <div className="flex flex-col items-center justify-center py-6 text-slate-500">
-          <Loader className="h-10 w-10 animate-spin mb-2" />
-          <span>Fetching your answer...</span>
-      </div>
-    );
+  <>
+    <div className="font-bold">Response</div>
+    <div>{queryItem?.answerText}</div>
+
+    {/* Frequently Asked Questions */}
+    <div className="mt-4 font-semibold">Frequently Asked Questions</div>
+    <div className="flex flex-col gap-2 mt-2">
+      {[
+        "Suggest me some youtube channels for Aptitude preperation",
+        "How many projects should we do minimum for interview preperation?",
+      ].map((faq, index) => (
+        <button
+          key={index}
+          className="text-left text-blue-600 hover:underline"
+          onClick={() => handleFaqClick(faq)}
+        >
+          {faq}
+        </button>
+      ))}
+    </div>
+  </>
+) : (
+  <div className="flex flex-col items-center justify-center py-6 text-slate-500">
+      <Loader className="h-10 w-10 animate-spin mb-2" />
+      <span>Fetching your answer...</span>
+  </div>
+);
+
 
     queryItem.answerText || "Query still in progress. Please wait...";
 
@@ -97,6 +117,21 @@ export default function ViewQueryPage() {
       </>
     );
   }
+
+  const handleFaqClick = async (faq: string) => {
+  try {
+    const request = { queryText: faq, userId: getSessionId() }; // getSessionId() gets the user id
+    const data = await api.submitQueryEndpointSubmitQueryPost({
+      submitQueryRequest: request,
+    });
+
+    // Redirect to the newly submitted query
+    window.location.href = `/viewQuery?query_id=${data.queryId}`;
+  } catch (error) {
+    console.error("Failed to submit FAQ:", error);
+  }
+};
+
 
   return (
     <>
